@@ -1,0 +1,4 @@
+build-depends:
+    base-noprelude
+    , relude
+mixins: base-noprelude (Prelude as BasePrelude)
