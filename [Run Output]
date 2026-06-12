@@ -1,9 +1,0 @@
-
-C:\Users\Administrator\Repos\haskell\chess.hs:145:43: error:
-    parse error on input `|'
-    |
-145 |               direction = case color with | White -> Up | Black -> Down
-    |                                           ^
-
-
-Process exited with code 1
