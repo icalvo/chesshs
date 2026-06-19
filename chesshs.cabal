@@ -1,0 +1,30 @@
+cabal-version:      3.0
+name:               chesshs
+version:            0.1.0.0
+build-type:         Simple
+
+common warnings
+  ghc-options: -Wincomplete-patterns
+               -Wincomplete-uni-patterns
+               -Werror=incomplete-patterns
+               -Werror=incomplete-uni-patterns
+
+library
+  import:           warnings
+  exposed-modules:  Chess
+                    ChessState
+                    CoreTypes
+                    Plies
+                    Reach
+                    RepetitionState
+  hs-source-dirs:   .
+  build-depends:    base >= 4.14 && < 5
+                  , containers
+  default-language: Haskell2010
+
+executable program
+  import:           warnings
+  main-is:          program.hs
+  build-depends:    base >= 4.14 && < 5
+                  , chesshs
+  default-language: Haskell2010

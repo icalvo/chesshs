@@ -5,6 +5,28 @@ module CoreTypes
     Rank (..),
     File (..),
     Color (..),
+    Piece (..),
+    CastlingRights (..),
+    bothWaysCastlingRights,
+    noCastlingRights,
+    Colored (..),
+    nextRank,
+    prevRank,
+    nextFile,
+    prevFile,
+    Coordinate,
+    whitePawn,
+    whiteKnight,
+    whiteBishop,
+    whiteRook,
+    whiteQueen,
+    whiteKing,
+    blackPawn,
+    blackKnight,
+    blackBishop,
+    blackRook,
+    blackQueen,
+    blackKing,
     a8,
     b8,
     c8,
@@ -69,11 +91,6 @@ module CoreTypes
     f1,
     g1,
     h1,
-    nextRank,
-    prevRank,
-    nextFile,
-    prevFile,
-    Position,
   )
 where
 
@@ -102,7 +119,7 @@ instance Show Rank where
 
 data File = A | B | C | D | E | F | G | H deriving (Enum, Show, Eq, Ord, Bounded)
 
-type Position = (File, Rank)
+type Coordinate = (File, Rank)
 
 trySucc :: (Enum a, Eq a, Bounded a) => a -> Maybe a
 trySucc x = if x == maxBound then Nothing else Just (succ x)
@@ -110,19 +127,64 @@ trySucc x = if x == maxBound then Nothing else Just (succ x)
 tryPred :: (Enum a, Eq a, Bounded a) => a -> Maybe a
 tryPred x = if x == minBound then Nothing else Just (pred x)
 
-nextRank :: Position -> Maybe Position
+nextRank :: Coordinate -> Maybe Coordinate
 nextRank (f, r) = fmap (f,) (trySucc r)
 
-prevRank :: Position -> Maybe Position
+prevRank :: Coordinate -> Maybe Coordinate
 prevRank (f, r) = fmap (f,) (tryPred r)
 
-nextFile :: Position -> Maybe Position
+nextFile :: Coordinate -> Maybe Coordinate
 nextFile (f, r) = fmap (,r) (trySucc f)
 
-prevFile :: Position -> Maybe Position
+prevFile :: Coordinate -> Maybe Coordinate
 prevFile (f, r) = fmap (,r) (tryPred f)
 
 data Color = Black | White deriving (Eq, Show)
+
+class Colored a where
+  color :: a -> Color
+
+instance Colored Color where
+  color = id
+
+data Piece = Piece Color Shape deriving (Eq, Show)
+
+instance Colored Piece where
+  color (Piece c _) = c
+
+whitePawn = Piece White Pawn
+
+whiteKnight = Piece White Knight
+
+whiteBishop = Piece White Bishop
+
+whiteRook = Piece White Rook
+
+whiteQueen = Piece White Queen
+
+whiteKing = Piece White King
+
+blackPawn = Piece Black Pawn
+
+blackKnight = Piece Black Knight
+
+blackBishop = Piece Black Bishop
+
+blackRook = Piece Black Rook
+
+blackQueen = Piece Black Queen
+
+blackKing = Piece Black King
+
+data CastlingRights = CastlingRights
+  { canCastleKingSide :: Bool,
+    canCastleQueenSide :: Bool
+  }
+  deriving (Eq, Show)
+
+bothWaysCastlingRights = CastlingRights {canCastleKingSide = True, canCastleQueenSide = True}
+
+noCastlingRights = CastlingRights {canCastleKingSide = False, canCastleQueenSide = False}
 
 a1 = (A, R1)
 

@@ -1,3 +1,7 @@
+import Chess
+
+pp = pieceCapabilities initialGameState (whitePawn, (E, R4))
+
 double x = x + x
 
 main = do
