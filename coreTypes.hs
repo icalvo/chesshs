@@ -1,98 +1,6 @@
 {-# LANGUAGE TupleSections #-}
 
-module CoreTypes
-  ( Shape (..),
-    Rank (..),
-    File (..),
-    Color (..),
-    Piece (..),
-    CastlingRights (..),
-    bothWaysCastlingRights,
-    noCastlingRights,
-    Colored (..),
-    nextRank,
-    prevRank,
-    nextFile,
-    prevFile,
-    Coordinate,
-    whitePawn,
-    whiteKnight,
-    whiteBishop,
-    whiteRook,
-    whiteQueen,
-    whiteKing,
-    blackPawn,
-    blackKnight,
-    blackBishop,
-    blackRook,
-    blackQueen,
-    blackKing,
-    a8,
-    b8,
-    c8,
-    d8,
-    e8,
-    f8,
-    g8,
-    h8,
-    a7,
-    b7,
-    c7,
-    d7,
-    e7,
-    f7,
-    g7,
-    h7,
-    a6,
-    b6,
-    c6,
-    d6,
-    e6,
-    f6,
-    g6,
-    h6,
-    a5,
-    b5,
-    c5,
-    d5,
-    e5,
-    f5,
-    g5,
-    h5,
-    a4,
-    b4,
-    c4,
-    d4,
-    e4,
-    f4,
-    g4,
-    h4,
-    a3,
-    b3,
-    c3,
-    d3,
-    e3,
-    f3,
-    g3,
-    h3,
-    a2,
-    b2,
-    c2,
-    d2,
-    e2,
-    f2,
-    g2,
-    h2,
-    a1,
-    b1,
-    c1,
-    d1,
-    e1,
-    f1,
-    g1,
-    h1,
-  )
-where
+module CoreTypes where
 
 data Shape
   = Pawn
@@ -101,7 +9,7 @@ data Shape
   | Rook
   | Queen
   | King
-  deriving (Eq, Show)
+  deriving (Eq)
 
 data Rank
   = R1
@@ -114,12 +22,13 @@ data Rank
   | R8
   deriving (Ord, Bounded, Eq, Enum)
 
-instance Show Rank where
-  show r = show (fromEnum r + 1)
+data File = A | B | C | D | E | F | G | H deriving (Enum, Eq, Ord, Bounded)
 
-data File = A | B | C | D | E | F | G | H deriving (Enum, Show, Eq, Ord, Bounded)
+newtype Coordinate = Coordinate {coord :: (File, Rank)} deriving (Eq, Ord)
 
-type Coordinate = (File, Rank)
+rank (Coordinate (_, r)) = r
+
+file (Coordinate (f, _)) = f
 
 trySucc :: (Enum a, Eq a, Bounded a) => a -> Maybe a
 trySucc x = if x == maxBound then Nothing else Just (succ x)
@@ -128,18 +37,22 @@ tryPred :: (Enum a, Eq a, Bounded a) => a -> Maybe a
 tryPred x = if x == minBound then Nothing else Just (pred x)
 
 nextRank :: Coordinate -> Maybe Coordinate
-nextRank (f, r) = fmap (f,) (trySucc r)
+nextRank (Coordinate (f, r)) = fmap (Coordinate . (f,)) (trySucc r)
 
 prevRank :: Coordinate -> Maybe Coordinate
-prevRank (f, r) = fmap (f,) (tryPred r)
+prevRank (Coordinate (f, r)) = fmap (Coordinate . (f,)) (tryPred r)
 
 nextFile :: Coordinate -> Maybe Coordinate
-nextFile (f, r) = fmap (,r) (trySucc f)
+nextFile (Coordinate (f, r)) = fmap (Coordinate . (,r)) (trySucc f)
 
 prevFile :: Coordinate -> Maybe Coordinate
-prevFile (f, r) = fmap (,r) (tryPred f)
+prevFile (Coordinate (f, r)) = fmap (Coordinate . (,r)) (tryPred f)
 
-data Color = Black | White deriving (Eq, Show)
+data Color = Black | White deriving (Eq)
+
+instance Show Color where
+  show Black = "b"
+  show White = "w"
 
 class Colored a where
   color :: a -> Color
@@ -147,7 +60,9 @@ class Colored a where
 instance Colored Color where
   color = id
 
-data Piece = Piece Color Shape deriving (Eq, Show)
+type Player = Color
+
+data Piece = Piece Color Shape deriving (Eq)
 
 instance Colored Piece where
   color (Piece c _) = c
@@ -186,130 +101,161 @@ bothWaysCastlingRights = CastlingRights {canCastleKingSide = True, canCastleQuee
 
 noCastlingRights = CastlingRights {canCastleKingSide = False, canCastleQueenSide = False}
 
-a1 = (A, R1)
+-- A ply represents a piece move made by one of the players.
+data Ply
+  = Move Piece Coordinate Coordinate
+  | Capture Piece Coordinate Coordinate
+  | CaptureEnPassant Color Coordinate Coordinate
+  | CastleKingSide Color
+  | CastleQueenSide Color
+  | Promote Color Coordinate Coordinate Shape
+  | CaptureAndPromote Color Coordinate Coordinate Shape
+  deriving (Eq)
 
-a2 = (A, R2)
+instance Colored Ply where
+  color ply =
+    case ply of
+      Move p _ _ -> color p
+      Capture p _ _ -> color p
+      CaptureEnPassant c _ _ -> c
+      CastleKingSide c -> c
+      CastleQueenSide c -> c
+      Promote c _ _ _ -> c
+      CaptureAndPromote c _ _ _ -> c
 
-a3 = (A, R3)
+-- A ply produces an output that can be a check, a checkmate, or none (regular ply).
+data PlyOutput = PlyOutput
+  { ply :: Ply,
+    isCheck :: Bool,
+    restOfPlies :: [Ply],
+    drawOffer :: Bool
+  }
+  deriving (Eq)
 
-a4 = (A, R4)
+a1 = Coordinate (A, R1)
 
-a5 = (A, R5)
+a2 = Coordinate (A, R2)
 
-a6 = (A, R6)
+a3 = Coordinate (A, R3)
 
-a7 = (A, R7)
+a4 = Coordinate (A, R4)
 
-a8 = (A, R8)
+a5 = Coordinate (A, R5)
 
-b1 = (B, R1)
+a6 = Coordinate (A, R6)
 
-b2 = (B, R2)
+a7 = Coordinate (A, R7)
 
-b3 = (B, R3)
+a8 = Coordinate (A, R8)
 
-b4 = (B, R4)
+b1 = Coordinate (B, R1)
 
-b5 = (B, R5)
+b2 = Coordinate (B, R2)
 
-b6 = (B, R6)
+b3 = Coordinate (B, R3)
 
-b7 = (B, R7)
+b4 = Coordinate (B, R4)
 
-b8 = (B, R8)
+b5 = Coordinate (B, R5)
 
-c1 = (C, R1)
+b6 = Coordinate (B, R6)
 
-c2 = (C, R2)
+b7 = Coordinate (B, R7)
 
-c3 = (C, R3)
+b8 = Coordinate (B, R8)
 
-c4 = (C, R4)
+c1 = Coordinate (C, R1)
 
-c5 = (C, R5)
+c2 = Coordinate (C, R2)
 
-c6 = (C, R6)
+c3 = Coordinate (C, R3)
 
-c7 = (C, R7)
+c4 = Coordinate (C, R4)
 
-c8 = (C, R8)
+c5 = Coordinate (C, R5)
 
-d1 = (D, R1)
+c6 = Coordinate (C, R6)
 
-d2 = (D, R2)
+c7 = Coordinate (C, R7)
 
-d3 = (D, R3)
+c8 = Coordinate (C, R8)
 
-d4 = (D, R4)
+d1 = Coordinate (D, R1)
 
-d5 = (D, R5)
+d2 = Coordinate (D, R2)
 
-d6 = (D, R6)
+d3 = Coordinate (D, R3)
 
-d7 = (D, R7)
+d4 = Coordinate (D, R4)
 
-d8 = (D, R8)
+d5 = Coordinate (D, R5)
 
-e1 = (E, R1)
+d6 = Coordinate (D, R6)
 
-e2 = (E, R2)
+d7 = Coordinate (D, R7)
 
-e3 = (E, R3)
+d8 = Coordinate (D, R8)
 
-e4 = (E, R4)
+e1 = Coordinate (E, R1)
 
-e5 = (E, R5)
+e2 = Coordinate (E, R2)
 
-e6 = (E, R6)
+e3 = Coordinate (E, R3)
 
-e7 = (E, R7)
+e4 = Coordinate (E, R4)
 
-e8 = (E, R8)
+e5 = Coordinate (E, R5)
 
-f1 = (F, R1)
+e6 = Coordinate (E, R6)
 
-f2 = (F, R2)
+e7 = Coordinate (E, R7)
 
-f3 = (F, R3)
+e8 = Coordinate (E, R8)
 
-f4 = (F, R4)
+f1 = Coordinate (F, R1)
 
-f5 = (F, R5)
+f2 = Coordinate (F, R2)
 
-f6 = (F, R6)
+f3 = Coordinate (F, R3)
 
-f7 = (F, R7)
+f4 = Coordinate (F, R4)
 
-f8 = (F, R8)
+f5 = Coordinate (F, R5)
 
-g1 = (G, R1)
+f6 = Coordinate (F, R6)
 
-g2 = (G, R2)
+f7 = Coordinate (F, R7)
 
-g3 = (G, R3)
+f8 = Coordinate (F, R8)
 
-g4 = (G, R4)
+g1 = Coordinate (G, R1)
 
-g5 = (G, R5)
+g2 = Coordinate (G, R2)
 
-g6 = (G, R6)
+g3 = Coordinate (G, R3)
 
-g7 = (G, R7)
+g4 = Coordinate (G, R4)
 
-g8 = (G, R8)
+g5 = Coordinate (G, R5)
 
-h1 = (H, R1)
+g6 = Coordinate (G, R6)
 
-h2 = (H, R2)
+g7 = Coordinate (G, R7)
 
-h3 = (H, R3)
+g8 = Coordinate (G, R8)
 
-h4 = (H, R4)
+h1 = Coordinate (H, R1)
 
-h5 = (H, R5)
+h2 = Coordinate (H, R2)
 
-h6 = (H, R6)
+h3 = Coordinate (H, R3)
 
-h7 = (H, R7)
+h4 = Coordinate (H, R4)
 
-h8 = (H, R8)
+h5 = Coordinate (H, R5)
+
+h6 = Coordinate (H, R6)
+
+h7 = Coordinate (H, R7)
+
+h8 = Coordinate (H, R8)

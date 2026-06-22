@@ -1,3 +1,3 @@
 :set -Wunused-binds -Wunused-imports -Wincomplete-patterns -Wincomplete-uni-patterns -Werror=incomplete-patterns -Werror=incomplete-uni-patterns
 :set prompt "--------GHCI> "
-:load Chess
+:load Program

@@ -13,7 +13,7 @@ import Data.List
 import Data.Maybe (mapMaybe)
 import Plies
 
-type Reach = [[(File, Rank)]]
+type Reach = [[Coordinate]]
 
 -- Directions
 up = nextRank
@@ -127,7 +127,7 @@ pieceReaches piece pos =
       collectReaches = concatMap applyReaches
    in case piece of
         Piece color Pawn ->
-          let (_, rank) = pos
+          let Coordinate (_, rank) = pos
 
               pawnRankType =
                 case (color, rank) of

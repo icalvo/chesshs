@@ -1,6 +1,7 @@
+import Actions
 import Chess
-
-pp = pieceCapabilities initialGameState (whitePawn, (E, R4))
+import CoreTypes
+import Notation
 
 double x = x + x
 
