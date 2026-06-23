@@ -44,9 +44,6 @@ data DrawType
   | InsufficientMaterial
   deriving (Show)
 
-instance Show (() -> PlayerActionOutcome) where
-  show _ = "outcome func"
-
 -- Possible results of a player action result.
 data PlayerActionOutcome
   = GameStarted ChessStateRepresentation [ExecutableAction]

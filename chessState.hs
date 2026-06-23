@@ -1,4 +1,4 @@
-{-# LANGUAGE StarIsType #-}
+{-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE TypeFamilies #-}
 
 module ChessState
@@ -18,11 +18,12 @@ where
 import Chess
 import CoreTypes
 import Data.Function ((&))
+import Data.Kind
 import Data.List
 import Data.List.NonEmpty (NonEmpty, (<|))
 import qualified Data.List.NonEmpty as NE
 import qualified Data.Map as Map
-import Data.Maybe (isJust, isNothing, listToMaybe, mapMaybe, maybeToList)
+import Data.Maybe (listToMaybe, mapMaybe, maybeToList)
 import Plies
 import Reach
 
@@ -50,7 +51,7 @@ instance RepetitionStateClass RepetitionState where
   pieces (RepetitionState _ _ _ _ pcs) = pcs
 
 class (RepetitionStateClass cs, RepetitionStateClass (Elem cs)) => ChessStateClass cs where
-  type Elem cs :: *
+  type Elem cs :: Type
   plies :: cs -> [PlyOutput]
   pliesWithoutPawnOrCapture :: cs -> Int
   repeatableStates :: cs -> NonEmpty (Elem cs)

@@ -3,14 +3,9 @@
 module Chess where
 
 import CoreTypes
-import Data.Function ((&))
-import Data.List
-import Data.List.NonEmpty ((<|))
-import qualified Data.List.NonEmpty as NE
 import qualified Data.Map as Map
-import Data.Maybe (isJust, isNothing, listToMaybe, mapMaybe, maybeToList)
+import Data.Maybe (isJust, isNothing)
 import Plies
-import Reach
 
 a -. b = b . a
 
