@@ -2,9 +2,12 @@
 {-# LANGUAGE TypeFamilies #-}
 
 module ChessState
-  ( RepetitionStateClass (..),
+  ( CastlingRights (..),
+    bothWaysCastlingRights,
+    RepetitionStateClass (..),
     ChessStateClass (..),
     ChessState,
+    Square,
     (@@@),
     isPlayerInCheck,
     initialGameState,
@@ -24,8 +27,17 @@ import Data.List.NonEmpty (NonEmpty, (<|))
 import qualified Data.List.NonEmpty as NE
 import qualified Data.Map as Map
 import Data.Maybe (listToMaybe, mapMaybe, maybeToList)
+import Names
 import Plies
 import Reach
+
+data CastlingRights = CastlingRights
+  { canCastleKingSide :: Bool,
+    canCastleQueenSide :: Bool
+  }
+  deriving (Eq, Show)
+
+bothWaysCastlingRights = CastlingRights {canCastleKingSide = True, canCastleQueenSide = True}
 
 class RepetitionStateClass r where
   turn :: r -> Color
@@ -138,17 +150,13 @@ initialGameState =
           numberOfMoves' = 1
         }
 
-currentPlayerCastlingRights this =
-  case turn this of
-    White -> whiteCastlingRights this
-    Black -> blackCastlingRights this
-
 repetitionCount game =
   repeatableStates game
     & NE.filter (repState game ==)
     & length
 
-game @@@ coord = pieces game @@ coord
+(@@@) :: (ChessStateClass c) => c -> Coordinate -> Square
+game @@@ coord = (coord, Map.lookup coord (pieces game))
 
 -- Generates plies from a ply type, a piece, and a source and target coordinates.
 -- In general, a single ply is generated. However, when there is a promotion, there
@@ -277,7 +285,10 @@ rawBoardChange boardChange pieces =
         & Map.delete coord
         & Map.insert coord (Piece col shp)
 
-opponent = opposite
+opponent color =
+  case color of
+    White -> Black
+    Black -> White
 
 -- Is the player in check?
 isPlayerInCheck playerColor game =

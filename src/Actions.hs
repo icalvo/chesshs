@@ -8,13 +8,15 @@ module Actions
   )
 where
 
+import BoardElements
 import Chess
 import ChessState
-import CoreTypes
 import Data.Array
 import Data.Function ((&))
 import qualified Data.Map as Map
 import Plies
+
+type Player = Color
 
 data ChessStateRepresentation = ChessStateRepresentation
   { board' :: Array (Int, Int) Square,

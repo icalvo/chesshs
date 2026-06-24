@@ -4,6 +4,7 @@ import Actions (PlayerAction (..), PlayerActionOutcome (..), Representable (..),
 import Chess
 import CoreTypes
 import Data.Function ((&))
+import Plies
 
 class AlgebraicNotation a where
   pgn :: a -> String

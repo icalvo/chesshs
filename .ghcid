@@ -1,0 +1,2 @@
+--command=cabal repl lib:chesshs
+--restart=chesshs.cabal
