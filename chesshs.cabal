@@ -15,9 +15,10 @@ library
   import: warnings
   exposed-modules:
     Actions
+    BoardElements
     Chess
     ChessState
-    CoreTypes
+    Names
     Notation
     Plies
     Reach

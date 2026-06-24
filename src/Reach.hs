@@ -6,8 +6,8 @@ module Reach
   )
 where
 
+import BoardElements
 import Control.Monad
-import CoreTypes
 import Data.Function
 import Data.List
 import Data.Maybe (mapMaybe)

@@ -1,6 +1,6 @@
 module Names where
 
-import CoreTypes
+import BoardElements
 
 whitePawn = Piece White Pawn
 

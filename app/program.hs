@@ -1,6 +1,6 @@
 import Actions
+import BoardElements
 import Chess
-import CoreTypes
 import Notation
 
 double x = x + x

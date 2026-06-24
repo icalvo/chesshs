@@ -18,8 +18,8 @@ module ChessState
   )
 where
 
+import BoardElements
 import Chess
-import CoreTypes
 import Data.Function ((&))
 import Data.Kind
 import Data.List

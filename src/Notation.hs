@@ -1,8 +1,8 @@
 module Notation where
 
 import Actions (PlayerAction (..), PlayerActionOutcome (..), Representable (..), moves')
+import BoardElements
 import Chess
-import CoreTypes
 import Data.Function ((&))
 import Plies
 
