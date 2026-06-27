@@ -1,3 +1,4 @@
+{- HLINT ignore "Redundant bracket" -}
 module Notation where
 
 import Actions (PlayerAction (..), PlayerActionOutcome (..), Representable (..), moves')
@@ -37,7 +38,7 @@ instance AlgebraicNotation File where
       H -> "h"
 
 instance AlgebraicNotation Coordinate where
-  pgn (Coordinate (f, r)) = (pgn f) ++ (pgn r)
+  pgn (Coordinate (f, r)) = pgn f ++ pgn r
 
 instance AlgebraicNotation Piece where
   pgn (Piece White shape) = pgn shape
@@ -114,25 +115,28 @@ instance Show PlayerAction where
 
 data Pair a = SinglePair a | Pair a a
 
+pairs :: [a] -> [Pair a]
+pairs (x : y : xs) = Pair x y : (pairs xs)
+pairs [x] = [SinglePair x]
+pairs [] = []
+
+seqFrom :: Int -> [Int]
+seqFrom i = [i ..]
+
 instance AlgebraicNotation PlayerActionOutcome where
   pgn outcome =
-    let pairs (x : y : xs) = Pair x y : (pairs xs)
-        pairs (x : []) = [SinglePair x]
-        pairs [] = []
-        indexedFrom :: Int -> [a] -> [(Int, a)]
-        indexedFrom i xs = zip [i ..] xs
+    let indexedFrom = zip . seqFrom
         movesToPGN moves =
           moves
             & pairs
             & indexedFrom 1
-            & map
+            & concatMap
               ( \(idx, plies) ->
                   case plies of
                     SinglePair whitePly -> show idx ++ ". " ++ pgn whitePly
                     Pair whitePly blackPly -> show idx ++ ". " ++ pgn whitePly ++ " " ++ pgn blackPly
               )
-            & concat
-        x =
+        gameResult =
           case outcome of
             Draw {} -> " 1/2-1/2"
             LostByResignation _ player ->
@@ -144,4 +148,8 @@ instance AlgebraicNotation PlayerActionOutcome where
                 Black -> "# 1-0"
                 White -> "# 0-1"
             _ -> ""
-     in movesToPGN (moves' (representation outcome)) ++ x
+     in outcome
+          & representation
+          & moves'
+          & movesToPGN
+          & (++ gameResult)

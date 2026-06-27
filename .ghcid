@@ -1,2 +1,3 @@
---command=cabal repl lib:chesshs
+--command=cabal repl test:chesshs-test
+--test=:main
 --restart=chesshs.cabal

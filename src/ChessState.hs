@@ -11,6 +11,7 @@ module ChessState
     (@@@),
     isPlayerInCheck,
     initialGameState,
+    buildGameState,
     pieceCapabilities,
     nextGameState,
     opponent,
@@ -419,3 +420,19 @@ pieceCapabilities game (piece, sourceCoord) =
               & isPlayerInCheck (turn game)
        in pieceCapabilitiesWithoutCheckFilter game piece sourceCoord
             & filter (not . plyPutsPlayerInCheck)
+
+buildGameState board player wcr bcr enpassant n1 n2 =
+  ChessState
+    { repeatableStates' =
+        NE.singleton
+          RepetitionState
+            { turn' = player,
+              whiteCastlingRights' = wcr,
+              blackCastlingRights' = bcr,
+              pawnCapturableEnPassant' = enpassant,
+              pieces' = board
+            },
+      plies' = [],
+      pliesWithoutPawnOrCapture' = n1,
+      numberOfMoves' = n2
+    }

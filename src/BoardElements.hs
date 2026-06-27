@@ -44,11 +44,11 @@ data Rank
   | R6
   | R7
   | R8
-  deriving (Ord, Bounded, Eq, Enum)
+  deriving (Ord, Bounded, Eq, Enum, Show)
 
-data File = A | B | C | D | E | F | G | H deriving (Enum, Eq, Ord, Bounded)
+data File = A | B | C | D | E | F | G | H deriving (Enum, Eq, Ord, Bounded, Show)
 
-newtype Coordinate = Coordinate {coord :: (File, Rank)} deriving (Eq, Ord)
+newtype Coordinate = Coordinate {coord :: (File, Rank)} deriving (Eq, Ord, Show)
 
 rank (Coordinate (_, r)) = r
 
